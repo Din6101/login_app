@@ -20,18 +20,12 @@ defmodule LoginAppWeb.Router do
   scope "/", LoginAppWeb do
     pipe_through :browser
 
-
-    live "/students", StudentLive.Index, :index
-    live "/students/new", StudentLive.Index, :new
-    live "/students/:id/edit", StudentLive.Index, :edit
-
-    live "/students/:id", StudentLive.Show, :show
-    live "/students/:id/show/edit", StudentLive.Show, :edit
-
-
+    live "/student/dashboard", StudentDashboardLive, :index
 
     get "/", PageController, :home
   end
+
+
 
   # Other scopes may use custom stacks.
   # scope "/api", LoginAppWeb do
@@ -75,9 +69,23 @@ defmodule LoginAppWeb.Router do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :require_authenticated_user,
-      on_mount: [{LoginAppWeb.UserAuth, :ensure_authenticated}] do
+      on_mount: [{LoginAppWeb.UserAuth, :ensure_authenticated},
+                  {LoginAppWeb.UserAuth, :mount_current_user}
+                  ] do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+
+      # Admin Dashboard Route
+      live "/admin/dashboard", AdminDashboardLive
+      live "/notifications", NotificationsLive
+      live "/profile", ProfileLive
+
+      live "/students", StudentLive.Index, :index
+      live "/students/new", StudentLive.Index, :new
+      live "/students/:id/edit", StudentLive.Index, :edit
+
+      live "/students/:id", StudentLive.Show, :show
+      live "/students/:id/show/edit", StudentLive.Show, :edit
 
       live "/teachers", TeacherLive.Index, :index
       live "/teachers/new", TeacherLive.Index, :new
@@ -85,6 +93,41 @@ defmodule LoginAppWeb.Router do
 
       live "/teachers/:id", TeacherLive.Show, :show
       live "/teachers/:id/show/edit", TeacherLive.Show, :edit
+
+      live "/courses", CoursesLive.Index, :index
+      live "/courses/new", CoursesLive.Index, :new
+      live "/courses/:id/edit", CoursesLive.Index, :edit
+
+      live "/courses/:id", CoursesLive.Show, :show
+      live "/courses/:id/show/edit", CoursesLive.Show, :edit
+
+      live "/enrollments", EnrollmentsLive.Index, :index
+      live "/enrollments/new", EnrollmentsLive.Index, :new
+      live "/enrollments/:id/edit", EnrollmentsLive.Index, :edit
+
+      live "/enrollments/:id", EnrollmentsLive.Show, :show
+      live "/enrollments/:id/show/edit", EnrollmentsLive.Show, :edit
+
+      live "/results", ResultsLive.Index, :index
+      live "/results/new", ResultsLive.Index, :new
+      live "/results/:id/edit", ResultsLive.Index, :edit
+
+      live "/results/:id", ResultsLive.Show, :show
+      live "/results/:id/show/edit", ResultsLive.Show, :edit
+
+      live "/certifications", CertificationsLive.Index, :index
+      live "/certifications/new", CertificationsLive.Index, :new
+      live "/certifications/:id/edit", CertificationsLive.Index, :edit
+
+      live "/certifications/:id", CertificationsLive.Show, :show
+      live "/certifications/:id/show/edit", CertificationsLive.Show, :edit
+
+      live "/reports", ReportsLive.Index, :index
+      live "/reports/new", ReportsLive.Index, :new
+      live "/reports/:id/edit", ReportsLive.Index, :edit
+
+      live "/reports/:id", ReportsLive.Show, :show
+      live "/reports/:id/show/edit", ReportsLive.Show, :edit
     end
   end
 

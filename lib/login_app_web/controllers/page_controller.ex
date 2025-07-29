@@ -6,4 +6,8 @@ defmodule LoginAppWeb.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
+
+  def show(conn, _params) do
+    render(conn, :show)
+  end
 end

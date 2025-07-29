@@ -31,6 +31,27 @@
   </:action>
 </.table>
 
+<div class="flex justify-center space-x-2 mt-4">
+  <%= if @pagination.page_number > 1 do %>
+    <button phx-click="paginate" phx-value-page={@pagination.page_number - 1} class="px-3 py-1 border rounded">
+      « Prev
+    </button>
+  <% end %>
+
+  <%= for p <- 1..@pagination.total_pages do %>
+    <button phx-click="paginate" phx-value-page={p}
+      class={"px-3 py-1 border rounded #{if p == @pagination.page_number, do: "bg-blue-500 text-white"}"}>
+      <%= p %>
+    </button>
+  <% end %>
+
+  <%= if @pagination.page_number < @pagination.total_pages do %>
+    <button phx-click="paginate" phx-value-page={@pagination.page_number + 1} class="px-3 py-1 border rounded">
+      Next »
+    </button>
+  <% end %>
+</div>
+
 <.modal :if={@live_action in [:new, :edit]} id="teacher-modal" show on_cancel={JS.patch(~p"/teachers")}>
   <.live_component
     module={LoginAppWeb.TeacherLive.FormComponent}

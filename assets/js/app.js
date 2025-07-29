@@ -16,29 +16,50 @@
 //
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
+// assets/js/app.js
+
 import "phoenix_html"
-// Establish Phoenix Socket and LiveView configuration.
-import {Socket} from "phoenix"
-import {LiveSocket} from "phoenix_live_view"
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
+let Hooks = {}
+
+// ✅ Custom hook for profile dropdown
+Hooks.ProfileDropdown = {
+  mounted() {
+    const button = this.el.querySelector("#profile-dropdown-button")
+    const menu = this.el.querySelector("#profile-dropdown-menu")
+
+    button.addEventListener("click", (e) => {
+      e.stopPropagation()
+      menu.classList.toggle("hidden")
+    })
+
+    document.addEventListener("click", () => {
+      menu.classList.add("hidden")
+    })
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+
+// ✅ Attach hooks properly here
 let liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken}
+  params: { _csrf_token: csrfToken },
+  hooks: Hooks,
+  longPollFallbackMs: 2500
 })
 
-// Show progress bar on live navigation and form submits
-topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
-window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
-window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
+// ✅ Topbar progress indicator
+topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" })
+window.addEventListener("phx:page-loading-start", () => topbar.show(300))
+window.addEventListener("phx:page-loading-stop", () => topbar.hide())
 
-// connect if there are any LiveViews on the page
+// ✅ Connect LiveSocket
 liveSocket.connect()
 
-// expose liveSocket on window for web console debug logs and latency simulation:
-// >> liveSocket.enableDebug()
-// >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
-// >> liveSocket.disableLatencySim()
+// ✅ Optional debug tools
 window.liveSocket = liveSocket
+
 

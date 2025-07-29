@@ -1,0 +1,28 @@
+<.header>
+  Courses {@courses.id}
+  <:subtitle>This is a courses record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/courses/#{@courses}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit courses</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name">{@courses.name}</:item>
+  <:item title="Course">{@courses.course_id}</:item>
+  <:item title="Description">{@courses.description}</:item>
+</.list>
+
+<.back navigate={~p"/courses"}>Back to courses</.back>
+
+<.modal :if={@live_action == :edit} id="courses-modal" show on_cancel={JS.patch(~p"/courses/#{@courses}")}>
+  <.live_component
+    module={LoginAppWeb.CoursesLive.FormComponent}
+    id={@courses.id}
+    title={@page_title}
+    action={@live_action}
+    courses={@courses}
+    patch={~p"/courses/#{@courses}"}
+  />
+</.modal>

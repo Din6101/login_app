@@ -1,0 +1,43 @@
+<.header>
+  Listing Certifications
+  <:actions>
+    <.link patch={~p"/certifications/new"}>
+      <.button>New Certifications</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="certifications"
+  rows={@streams.certifications_collection}
+  row_click={fn {_id, certifications} -> JS.navigate(~p"/certifications/#{certifications}") end}
+>
+  <:col :let={{_id, certifications}} label="Name">{certifications.name}</:col>
+  <:col :let={{_id, certifications}} label="Course">{certifications.course_id}</:col>
+  <:col :let={{_id, certifications}} label="Status">{certifications.status}</:col>
+  <:action :let={{_id, certifications}}>
+    <div class="sr-only">
+      <.link navigate={~p"/certifications/#{certifications}"}>Show</.link>
+    </div>
+    <.link patch={~p"/certifications/#{certifications}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, certifications}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: certifications.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="certifications-modal" show on_cancel={JS.patch(~p"/certifications")}>
+  <.live_component
+    module={LoginAppWeb.CertificationsLive.FormComponent}
+    id={@certifications.id || :new}
+    title={@page_title}
+    action={@live_action}
+    certifications={@certifications}
+    patch={~p"/certifications"}
+  />
+</.modal>

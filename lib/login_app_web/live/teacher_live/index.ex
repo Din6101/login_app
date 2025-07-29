@@ -9,13 +9,13 @@ defmodule LoginAppWeb.TeacherLive.Index do
     user = LoginApp.Accounts.get_user_by_session_token(token)
     IO.inspect(user.role)
     if user.role == "admin" do
-    {:ok, stream(socket, :teachers, LoginApp.School.list_teachers())}
+      {:ok, load_teachers(socket, 1)}
     else
     socket =
     socket
     |> put_flash(:error, "Access denied.")
     |> push_navigate(to: "/")
-    |> stream(:teacher, []) # Ensure @streams.teacher exists
+    |> stream(:teachers, []) # Ensure @streams.teacher exists
     {:ok, socket}
     end
   end
@@ -55,4 +55,22 @@ defmodule LoginAppWeb.TeacherLive.Index do
 
     {:noreply, stream_delete(socket, :teachers, teacher)}
   end
+
+  @impl true
+def handle_event("paginate", %{"page" => page}, socket) do
+  {:noreply, load_teachers(socket, String.to_integer(page))}
+end
+
+
+  @spec load_teachers(Phoenix.LiveView.Socket.t(), integer()) :: Phoenix.LiveView.Socket.t()
+  defp load_teachers(socket, page) do
+    pagination = School.list_teachers_paginated(page: page)
+
+    socket
+    |> stream(:teachers, pagination.entries, reset: true)
+    |> assign(:pagination, pagination)
+    |> assign(:page, page)
+  end
+
+
 end

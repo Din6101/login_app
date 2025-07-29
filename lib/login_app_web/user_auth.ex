@@ -43,6 +43,21 @@ defmodule LoginAppWeb.UserAuth do
     |> redirect(to: redirect_path)
   end
 
+  def init(opts), do: opts
+
+  def call(conn, _opts) do
+    user = conn.assigns[:current_user]
+
+    if user && user.role == "admin" do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Access denied.")
+      |> redirect(to: "/")
+      |> halt()
+    end
+  end
+
   defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
     put_resp_cookie(conn, @remember_me_cookie, token, @remember_me_options)
   end

@@ -8,6 +8,10 @@ defmodule LoginApp.Accounts do
 
   alias LoginApp.Accounts.{User, UserToken, UserNotifier}
 
+
+  def count_users, do: Repo.aggregate(User, :count, :id)
+
+
   ## Database getters
 
   @doc """

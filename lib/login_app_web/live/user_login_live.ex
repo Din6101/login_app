@@ -35,6 +35,7 @@ defmodule LoginAppWeb.UserLoginLive do
     """
   end
 
+
   def handle_event("login", %{"user" => %{"email" => email, "password" => password}}, socket) do
     case LoginApp.Accounts.authenticate_user(email, password) do
       {:ok, user} ->
@@ -50,8 +51,13 @@ defmodule LoginAppWeb.UserLoginLive do
     end
   end
 
-  defp route_for("admin"), do: "/teachers"
-
+  defp route_for(role) do
+    case role do
+      "admin" -> "/admin/dashboard"
+      "user" -> "/student/dashboard"
+      _ -> "/"  # fallback or 403
+    end
+  end
 
 
   def mount(_params, _session, socket) do

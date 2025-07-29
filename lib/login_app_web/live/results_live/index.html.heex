@@ -1,0 +1,45 @@
+<.header>
+  Listing Results
+  <:actions>
+    <.link patch={~p"/results/new"}>
+      <.button>New Results</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="results"
+  rows={@streams.results_collection}
+  row_click={fn {_id, results} -> JS.navigate(~p"/results/#{results}") end}
+>
+  <:col :let={{_id, results}} label="Name">{results.name}</:col>
+  <:col :let={{_id, results}} label="Course">{results.course_id}</:col>
+  <:col :let={{_id, results}} label="Score">{results.score}</:col>
+  <:col :let={{_id, results}} label="Grade">{results.grade}</:col>
+  <:col :let={{_id, results}} label="Status">{results.status}</:col>
+  <:action :let={{_id, results}}>
+    <div class="sr-only">
+      <.link navigate={~p"/results/#{results}"}>Show</.link>
+    </div>
+    <.link patch={~p"/results/#{results}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, results}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: results.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="results-modal" show on_cancel={JS.patch(~p"/results")}>
+  <.live_component
+    module={LoginAppWeb.ResultsLive.FormComponent}
+    id={@results.id || :new}
+    title={@page_title}
+    action={@live_action}
+    results={@results}
+    patch={~p"/results"}
+  />
+</.modal>

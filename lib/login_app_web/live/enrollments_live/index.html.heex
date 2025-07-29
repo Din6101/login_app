@@ -1,0 +1,43 @@
+<.header>
+  Listing Enrollments
+  <:actions>
+    <.link patch={~p"/enrollments/new"}>
+      <.button>New Enrollments</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="enrollments"
+  rows={@streams.enrollments_collection}
+  row_click={fn {_id, enrollments} -> JS.navigate(~p"/enrollments/#{enrollments}") end}
+>
+  <:col :let={{_id, enrollments}} label="Name">{enrollments.name}</:col>
+  <:col :let={{_id, enrollments}} label="Course">{enrollments.course_id}</:col>
+  <:col :let={{_id, enrollments}} label="Description">{enrollments.description}</:col>
+  <:action :let={{_id, enrollments}}>
+    <div class="sr-only">
+      <.link navigate={~p"/enrollments/#{enrollments}"}>Show</.link>
+    </div>
+    <.link patch={~p"/enrollments/#{enrollments}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, enrollments}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: enrollments.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="enrollments-modal" show on_cancel={JS.patch(~p"/enrollments")}>
+  <.live_component
+    module={LoginAppWeb.EnrollmentsLive.FormComponent}
+    id={@enrollments.id || :new}
+    title={@page_title}
+    action={@live_action}
+    enrollments={@enrollments}
+    patch={~p"/enrollments"}
+  />
+</.modal>

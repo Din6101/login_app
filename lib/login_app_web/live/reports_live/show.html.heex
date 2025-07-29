@@ -1,0 +1,28 @@
+<.header>
+  Reports {@reports.id}
+  <:subtitle>This is a reports record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/reports/#{@reports}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit reports</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name">{@reports.name}</:item>
+  <:item title="Course">{@reports.course_id}</:item>
+  <:item title="Evaluation">{@reports.evaluation}</:item>
+</.list>
+
+<.back navigate={~p"/reports"}>Back to reports</.back>
+
+<.modal :if={@live_action == :edit} id="reports-modal" show on_cancel={JS.patch(~p"/reports/#{@reports}")}>
+  <.live_component
+    module={LoginAppWeb.ReportsLive.FormComponent}
+    id={@reports.id}
+    title={@page_title}
+    action={@live_action}
+    reports={@reports}
+    patch={~p"/reports/#{@reports}"}
+  />
+</.modal>

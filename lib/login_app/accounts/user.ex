@@ -3,6 +3,7 @@ defmodule LoginApp.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
+    field :name, :string
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
@@ -37,7 +38,7 @@ defmodule LoginApp.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password, :role])
+    |> cast(attrs, [:name, :email, :password, :role])
     |> validate_inclusion(:role, ["admin", "teacher", "student"]) # 👈 optional, for safety
     |> validate_email(opts)
     |> validate_password(opts)
@@ -45,7 +46,7 @@ defmodule LoginApp.Accounts.User do
 
   defp validate_email(changeset, opts) do
     changeset
-    |> validate_required([:email, :password, :role])
+    |> validate_required([:name, :email, :password, :role])
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
     |> validate_length(:email, max: 160)
     |> maybe_validate_unique_email(opts)
