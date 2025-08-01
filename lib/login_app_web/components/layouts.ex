@@ -9,5 +9,14 @@ defmodule LoginAppWeb.Layouts do
   """
   use LoginAppWeb, :html
 
+  def mount(_params, _session, socket) do
+    {:ok, assign_new(socket, :sidebar_open, fn -> false end)}
+  end
+
+  def handle_event("toggle_sidebar", _params, socket) do
+    {:noreply, update(socket, :sidebar_open, &(!&1))}
+  end
+
+
   embed_templates "layouts/*"
 end

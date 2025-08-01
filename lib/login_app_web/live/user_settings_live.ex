@@ -18,6 +18,7 @@ defmodule LoginAppWeb.UserSettingsLive do
           phx-submit="update_email"
           phx-change="validate_email"
         >
+          <.input field={@form[:name]} label="Full name" />
           <.input field={@email_form[:email]} type="email" label="Email" required />
           <.input
             field={@email_form[:current_password]}
@@ -43,6 +44,8 @@ defmodule LoginAppWeb.UserSettingsLive do
           phx-submit="update_password"
           phx-trigger-action={@trigger_submit}
         >
+
+          <.input field={@form[:name]} label="Name" />
           <input
             name={@password_form[:email].name}
             type="hidden"
@@ -88,19 +91,25 @@ defmodule LoginAppWeb.UserSettingsLive do
 
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
-    email_changeset = Accounts.change_user_email(user)
-    password_changeset = Accounts.change_user_password(user)
 
-    socket =
-      socket
-      |> assign(:current_password, nil)
-      |> assign(:email_form_current_password, nil)
-      |> assign(:current_email, user.email)
-      |> assign(:email_form, to_form(email_changeset))
-      |> assign(:password_form, to_form(password_changeset))
-      |> assign(:trigger_submit, false)
+  changeset = Accounts.change_user(user)
+  form = to_form(changeset)
 
-    {:ok, socket}
+  email_changeset = Accounts.change_user_email(user)
+  password_changeset = Accounts.change_user_password(user)
+
+  socket =
+    socket
+    |> assign(:changeset, changeset)
+    |> assign(:form, form)
+    |> assign(:current_email, user.email)
+    |> assign(:current_password, nil)
+    |> assign(:email_form_current_password, nil)
+    |> assign(:email_form, to_form(email_changeset))
+    |> assign(:password_form, to_form(password_changeset))
+    |> assign(:trigger_submit, false)
+
+  {:ok, socket}
   end
 
   def handle_event("validate_email", params, socket) do

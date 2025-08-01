@@ -16,4 +16,7 @@ defmodule LoginApp.School.Teacher do
     |> cast(attrs, [:name, :subject, :years_of_experience])
     |> validate_required([:name, :subject, :years_of_experience])
   end
+
+
+
 end

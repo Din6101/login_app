@@ -13,6 +13,12 @@ defmodule LoginApp.Accounts.User do
     timestamps(type: :utc_datetime)
   end
 
+
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, [:name, :email])
+    |> validate_required([:name, :email])
+  end
   @doc """
   A user changeset for registration.
 
@@ -95,7 +101,7 @@ defmodule LoginApp.Accounts.User do
   """
   def email_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email])
+    |> cast(attrs, [:email, :name])
     |> validate_email(opts)
     |> case do
       %{changes: %{email: _}} = changeset -> changeset

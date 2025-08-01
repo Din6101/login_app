@@ -1,117 +1,120 @@
-<header class="w-full bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between relative z-50">
-  <!-- Left: Logo + Title -->
-  <div class="flex items-center space-x-2">
-    <img src={~p"/images/logo.svg"} width="24" />
-    <span class="text-lg font-semibold text-gray-900">MyProject</span>
-  </div>
-
-  <!-- Right: User Profile -->
+<div x-data="{ sidebarOpen: true }" class="flex h-screen bg-blue-50" phx-no-format>
   <%= if @current_user do %>
-    <div id="profile-dropdown-wrapper" phx-hook="ProfileDropdown" class="relative">
-      <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
-        <img src="/images/photo.jpg" class="w-10 h-10 rounded-full" />
-        <span class="text-sm font-medium text-gray-900"><%= @current_user.email %></span>
-      </button>
-
-      <div id="profile-dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md hidden">
-        <.link navigate={~p"/notifications"} class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700">🔔 Notifications</.link>
-        <.link navigate={~p"/users/settings"} class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700">⚙️ Settings</.link>
-        <.link navigate={~p"/profile"} class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700">🙍‍♂️ Profile</.link>
-        <.link href={~p"/users/log_out"} method="delete" class="block px-4 py-2 text-red-600 hover:bg-red-100 text-sm">🚪 Log out</.link>
-      </div>
-    </div>
-  <% end %>
-</header>
-
-<div class="flex h-screen bg-gray-50">
-  <%= if assigns[:current_user] do %>
-    <!-- Sidebar -->
-    <div class="w-64 bg-white shadow-lg border-r border-blue-200">
-      <div class="flex flex-col h-full">
-        
-        <!-- Sidebar Navigation -->
-        <aside class="w-64 bg-gray-800 text-white p-4 min-h-screen">
-
-  <nav>
-    <ul class="space-y-2">
-      <!-- Links shown to all users -->
-      <li>
-        <.link navigate={~p"/admin/dashboard"} class="block px-3 py-2 hover:bg-gray-700 rounded">
-          🏠 Dashboard
-        </.link>
-      </li>
-      <!-- Admin-only links -->
-      <%= if @current_user.role == "admin" do %>
-  <li class="group relative">
-    <button class="w-full flex justify-between items-center px-3 py-2 hover:bg-gray-700 rounded focus:outline-none">
-      <span>👥 Manage Users</span>
-      <svg class="w-4 h-4 ml-1 transform group-hover:rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-      </svg>
-    </button>
-    <!-- Submenu -->
-    <ul class="hidden group-hover:block mt-1 ml-4 space-y-1">
-      <li>
-        <.link navigate={~p"/teachers"} class="block px-3 py-2 hover:bg-gray-600 rounded">
-          👤 Manage Trainer
-        </.link>
-      </li>
-      <li>
-        <.link navigate={~p"/students"} class="block px-3 py-2 hover:bg-gray-600 rounded">
-          👨‍🎓 Manage Trainee
-        </.link>
-      </li>
-    </ul>
-  </li>
-
-      <li>
-        <.link navigate={~p"/courses"} class="block px-3 py-2 hover:bg-gray-700 rounded">
-          📚 Courses
-        </.link>
-      </li>
-      <li>
-        <.link navigate={~p"/enrollments"} class="block px-3 py-2 hover:bg-gray-700 rounded">
-          📝 Enrollments
-        </.link>
-      </li>
-      <li>
-        <.link navigate={~p"/results"} class="block px-3 py-2 hover:bg-gray-700 rounded">
-          🎓 Results
-        </.link>
-      </li>
-      <li>
-        <.link navigate={~p"/certifications"} class="block px-3 py-2 hover:bg-gray-700 rounded">
-          📄 Certifications
-        </.link>
-      </li>
-
-      
+  <!-- Sidebar -->
+  <aside class="fixed md:relative w-64 bg-cyan-800 text-white h-full z-50 transform transition-transform duration-300 ease-in-out"
+         x-bind:class="{ '-translate-x-full': !sidebarOpen }"
+         x-cloak>
+    <!-- Sidebar Content -->
+    <nav class="p-4">
+      <ul class="space-y-2">
         <li>
-          <.link navigate={~p"/reports"} class="block px-3 py-2 hover:bg-gray-700 rounded">
-            📊 Reports
+          <.link navigate={~p"/admin/dashboard"} class="block px-3 py-2 hover:bg-cyan-700 rounded">
+            🏠 Dashboard
           </.link>
         </li>
-      <% end %>
-
-      <li>
-        <.link navigate={~p"/users/settings"} class="block px-3 py-2 hover:bg-gray-700 rounded">
-          ⚙️ Settings
-        </.link>
-      </li>
-    </ul>
-  </nav>
-</aside>  
+          <li class="group relative">
+            <button class="w-full flex justify-between items-center px-3 py-2 hover:bg-cyan-700 rounded focus:outline-none">
+              <span>👥 Manage Users</span>
+              <svg class="w-4 h-4 ml-1 transform group-hover:rotate-180 transition-transform"
+                   xmlns="http://www.w3.org/2000/svg" fill="none"
+                   viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <ul class="hidden group-hover:block mt-1 ml-4 space-y-1">
+              <li>
+                <.link navigate={~p"/teachers"} class="block px-3 py-2 hover:bg-cyan-600 rounded">
+                  👤 Manage Trainer
+                </.link>
+              </li>
+              <li>
+                <.link navigate={~p"/students"} class="block px-3 py-2 hover:bg-cyan-600 rounded">
+                  👨‍🎓 Manage Trainee
+                </.link>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <.link navigate={~p"/courses"} class="block px-3 py-2 hover:bg-cyan-700 rounded">
+              📚 Courses
+            </.link>
+          </li>
+          <li>
+            <.link navigate={~p"/enrollments"} class="block px-3 py-2 hover:bg-cyan-700 rounded">
+              📝 Enrollments
+            </.link>
+          </li>
+          <li>
+            <.link navigate={~p"/results"} class="block px-3 py-2 hover:bg-cyan-700 rounded">
+              🎓 Results
+            </.link>
+          </li>
+          <li>
+            <.link navigate={~p"/certifications"} class="block px-3 py-2 hover:bg-cyan-700 rounded">
+              📄 Certifications
+            </.link>
+          </li>
+          <li>
+            <.link navigate={~p"/reports"} class="block px-3 py-2 hover:bg-cyan-700 rounded">
+              📊 Reports
+            </.link>
+          </li>
+      </ul>
+    </nav>
+  </aside>
+  <% end %>
+  <!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto">
+    <!-- Header -->
+    <header class="w-full bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between relative z-50">
+      <!-- Left: Burger + Logo -->
+      <div class="flex items-center space-x-3">
+        <!-- Burger Button -->
+        <button 
+          @click="sidebarOpen = !sidebarOpen"
+          aria-label="Toggle Menu"
+          class="p-2 rounded-md bg-white text-gray-800 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <template x-if="!sidebarOpen">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </template>
+          <template x-if="sidebarOpen">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </template>
+        </button>
+        <!-- Logo -->
+        <img src={~p"/images/logo.svg"} width="24" />
+        <span class="text-lg font-semibold text-black-900">MyProject</span>
+      </div>
+      <%= if @current_user do %>
+  <div id="profile-dropdown-wrapper" phx-hook="ProfileDropdown" class="relative">
+    <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
+    <span class="text-sm font-medium text-gray-900"><%= @current_user.name %></span>
+      <img src="/images/photo.jpg" class="w-10 h-10 rounded-full" />
+    </button>
+    <div id="profile-dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md hidden">
+      <.link navigate={~p"/notifications"} class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700">🔔 Notifications</.link>
+      <.link navigate={~p"/users/settings"} class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700">⚙️ Settings</.link>
+      <.link navigate={~p"/profile"} class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700">🙍‍♂️ Profile</.link>
+      <.link href={~p"/users/log_out"} method="delete" class="block px-4 py-2 text-red-600 hover:bg-red-100 text-sm">🚪 Log out</.link>
+    </div>
+  </div>
+<% end %>
+    </header>
+    <!-- Page Content -->
+    <div class="px-6 py-8">
+      <div class="max-w-7xl mx-auto">
+        <.flash_group flash={@flash} />
+        {@inner_content}
       </div>
     </div>
-  <% end %>
-      <!-- Main Content Area -->
-    <main class="flex-1 overflow-y-auto bg-white-100">
-      <div class="px-6 py-8">
-        <div class="max-w-7xl mx-auto">     
-          <.flash_group flash={@flash} />
-          {@inner_content}
-        </div>
-      </div>
-    </main>
-  </div>
+  </main>
+</div>

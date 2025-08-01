@@ -39,4 +39,16 @@ defmodule LoginAppWeb.UserSessionController do
     |> put_flash(:info, "Logged out successfully.")
     |> UserAuth.log_out_user()
   end
+
+  def index(conn, params) do
+    filters = Map.take(params, ["status", "category"])
+    page = Map.get(params, "page", "1") |> String.to_integer()
+    per_page = Map.get(params, "per_page", "10") |> String.to_integer()
+
+    results = LoginApp.School.list_items(filters, page, per_page)
+
+    render(conn, "index.html", items: results.entries, page: results)
+  end
+
+
 end

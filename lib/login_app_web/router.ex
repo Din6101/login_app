@@ -20,7 +20,7 @@ defmodule LoginAppWeb.Router do
   scope "/", LoginAppWeb do
     pipe_through :browser
 
-    live "/student/dashboard", StudentDashboardLive, :index
+
 
     get "/", PageController, :home
   end
@@ -69,6 +69,7 @@ defmodule LoginAppWeb.Router do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :require_authenticated_user,
+    layout: {LoginAppWeb.Layouts, :app},
       on_mount: [{LoginAppWeb.UserAuth, :ensure_authenticated},
                   {LoginAppWeb.UserAuth, :mount_current_user}
                   ] do
@@ -76,6 +77,7 @@ defmodule LoginAppWeb.Router do
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
 
       # Admin Dashboard Route
+      live "/student/dashboard", StudentDashboardLive
       live "/admin/dashboard", AdminDashboardLive
       live "/notifications", NotificationsLive
       live "/profile", ProfileLive

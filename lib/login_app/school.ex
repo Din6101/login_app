@@ -9,6 +9,27 @@ defmodule LoginApp.School do
   alias LoginApp.School.Student
   alias LoginApp.School.Teacher
 
+  def list_items(filters, page, per_page) do
+    Item
+    |> apply_filters(filters)
+    |> paginate(page, per_page)
+  end
+
+  defp apply_filters(query, filters) do
+    Enum.reduce(filters, query, fn
+      {"status", value}, query -> where(query, [i], i.status == ^value)
+      {"category", value}, query -> where(query, [i], i.category == ^value)
+      _, query -> query
+    end)
+  end
+
+  defp paginate(query, page, per_page) do
+    query
+    |> order_by(desc: :inserted_at)
+    |> LoginApp.Repo.paginate(page: page, page_size: per_page)  # ← Scrivener
+  end
+
+
   def count_teachers do
     Repo.aggregate(Teacher, :count, :id)
   end
@@ -18,18 +39,52 @@ defmodule LoginApp.School do
   end
 
 
-  def list_students_paginated(params \\ %{}) do
+  def list_students_paginated(opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+  filter = Keyword.get(opts, :filter, "")
+  sort = Keyword.get(opts, :sort, "inserted_at_desc")
+
+  query =
     Student
-    |> order_by(desc: :inserted_at)
-    |> LoginApp.Repo.paginate(params)
+    |> where([s], ilike(s.name, ^"%#{filter}%"))
+    |> order_by(^sort_clause(sort))
+
+  Repo.paginate(query, page: page)
   end
 
+defp sort_clause("name_asc"), do: [asc: :name]
+defp sort_clause("name_desc"), do: [desc: :name]
+defp sort_clause(_), do: [desc: :inserted_at]
+
   @spec list_teachers_paginated(Keyword.t()) :: Scrivener.Page.t()
-def list_teachers_paginated(opts \\ [page: 1, page_size: 10]) do
-  Teacher
-  |> order_by([t], desc: t.inserted_at)
-  |> Repo.paginate(opts)
-end
+  def list_teachers_paginated(opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 10)
+    filter = Keyword.get(opts, :filter, "")
+    sort = Keyword.get(opts, :sort, "inserted_at_desc")
+
+    base_query =
+      Teacher
+      |> filter_by_name_or_subject(filter)
+      |> sort_query(sort)
+
+    Repo.paginate(base_query, page: page, page_size: per_page)
+  end
+
+  defp filter_by_name_or_subject(query, ""), do: query
+
+  defp filter_by_name_or_subject(query, filter) do
+    where(query, [t], ilike(t.name, ^"%#{filter}%") or ilike(t.subject, ^"%#{filter}%"))
+  end
+
+  defp sort_query(query, "name_asc"), do: order_by(query, asc: :name)
+  defp sort_query(query, "name_desc"), do: order_by(query, desc: :name)
+  defp sort_query(query, "experience_desc"), do: order_by(query, desc: :years_of_experience)
+  defp sort_query(query, "experience_asc"), do: order_by(query, asc: :years_of_experience)
+  defp sort_query(query, _), do: order_by(query, desc: :inserted_at)
+
+
+
 
 
 

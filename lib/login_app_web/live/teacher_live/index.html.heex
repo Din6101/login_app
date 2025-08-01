@@ -7,20 +7,34 @@
   </:actions>
 </.header>
 
+<form phx-change="filter" phx-submit="filter" class="mb-4 flex gap-2">
+  <input type="text" name="filter" value={@filter} placeholder="Search name or subject"
+         class="border rounded px-2 py-1" />
+  <select name="sort" class="border rounded px-2 py-1">
+    <option value="name_asc" selected={@sort == "name_asc"}>Name ↑</option>
+    <option value="name_desc" selected={@sort == "name_desc"}>Name ↓</option>
+    <option value="experience_asc" selected={@sort == "experience_asc"}>Experience ↑</option>
+    <option value="experience_desc" selected={@sort == "experience_desc"}>Experience ↓</option>
+  </select>
+</form>
+
+
 <.table
   id="teachers"
   rows={@streams.teachers}
-  row_click={fn {_id, teacher} -> JS.navigate(~p"/teachers/#{teacher}") end}
+  row_click={fn {_id, teacher} -> JS.navigate(~p"/teachers/#{teacher.id}") end}
 >
-  <:col :let={{_id, teacher}} label="Name">{teacher.name}</:col>
-  <:col :let={{_id, teacher}} label="Subject">{teacher.subject}</:col>
-  <:col :let={{_id, teacher}} label="Years of experience">{teacher.years_of_experience}</:col>
+  <:col :let={{_id, teacher}} label="Name"><%= teacher.name %></:col>
+  <:col :let={{_id, teacher}} label="Subject"><%= teacher.subject %></:col>
+  <:col :let={{_id, teacher}} label="Years of experience"><%= teacher.years_of_experience %></:col>
+
   <:action :let={{_id, teacher}}>
     <div class="sr-only">
-      <.link navigate={~p"/teachers/#{teacher}"}>Show</.link>
+      <.link navigate={~p"/teachers/#{teacher.id}"}>Show</.link>
     </div>
-    <.link patch={~p"/teachers/#{teacher}/edit"}>Edit</.link>
+    <.link patch={~p"/teachers/#{teacher.id}/edit"}>Edit</.link>
   </:action>
+
   <:action :let={{id, teacher}}>
     <.link
       phx-click={JS.push("delete", value: %{id: teacher.id}) |> hide("##{id}")}
@@ -31,26 +45,30 @@
   </:action>
 </.table>
 
-<div class="flex justify-center space-x-2 mt-4">
+
+
+<nav class="pagination space-x-4 mt-4 flex justify-center">
   <%= if @pagination.page_number > 1 do %>
-    <button phx-click="paginate" phx-value-page={@pagination.page_number - 1} class="px-3 py-1 border rounded">
-      « Prev
-    </button>
+    <.link
+      patch={~p"/teachers?page=#{@pagination.page_number - 1}&filter=#{@filter}&sort=#{@sort}"}
+      class="px-3 py-1 border rounded"
+    >
+      « Previous
+    </.link>
   <% end %>
 
-  <%= for p <- 1..@pagination.total_pages do %>
-    <button phx-click="paginate" phx-value-page={p}
-      class={"px-3 py-1 border rounded #{if p == @pagination.page_number, do: "bg-blue-500 text-white"}"}>
-      <%= p %>
-    </button>
-  <% end %>
+  <span class="px-3 py-1">Page <%= @pagination.page_number %> of <%= @pagination.total_pages %></span>
 
   <%= if @pagination.page_number < @pagination.total_pages do %>
-    <button phx-click="paginate" phx-value-page={@pagination.page_number + 1} class="px-3 py-1 border rounded">
+    <.link
+      patch={~p"/teachers?page=#{@pagination.page_number + 1}&filter=#{@filter}&sort=#{@sort}"}
+      class="px-3 py-1 border rounded"
+    >
       Next »
-    </button>
+    </.link>
   <% end %>
-</div>
+</nav>
+
 
 <.modal :if={@live_action in [:new, :edit]} id="teacher-modal" show on_cancel={JS.patch(~p"/teachers")}>
   <.live_component

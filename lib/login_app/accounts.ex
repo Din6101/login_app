@@ -117,6 +117,11 @@ end
 
   ## Settings
 
+
+  def change_user(user) do
+    LoginApp.Accounts.User.changeset(user, %{})
+  end
+
   @doc """
   Returns an `%Ecto.Changeset{}` for changing the user email.
 
@@ -144,11 +149,17 @@ end
 
   """
   def apply_user_email(user, password, attrs) do
-    user
-    |> User.email_changeset(attrs)
-    |> User.validate_current_password(password)
-    |> Ecto.Changeset.apply_action(:update)
+    case get_user_by_email_and_password(user.email, password) do
+      nil ->
+        {:error, :invalid_password}
+
+      _ ->
+        user
+        |> change_user_email(attrs)
+        |> Repo.update()
+    end
   end
+
 
   @doc """
   Updates the user email using the given token.
@@ -236,6 +247,13 @@ end
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  def update_user(user, attrs) do
+    user
+    |> User.changeset(attrs)
+    |> Repo.update()
+  end
+
 
   ## Session
 

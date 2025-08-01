@@ -7,6 +7,22 @@
   </:actions>
 </.header>
 
+<div class="mb-4">
+  <form phx-change="filter" phx-submit="filter">
+    <input
+      type="text"
+      name="filter"
+      value={@filter}
+      placeholder="Search by name..."
+      class="border rounded px-3 py-1"
+    />
+    <button type="submit" class="ml-2 px-3 py-1 border rounded bg-blue-500 text-white">
+      Filter
+    </button>
+  </form>
+</div>
+
+
 <.table
   id="students"
   rows={@streams.students}
@@ -32,26 +48,27 @@
   </:action>
 </.table>
 
-<div class="flex justify-center space-x-2 mt-4">
+<nav class="pagination space-x-4 mt-4 flex justify-center">
   <%= if @pagination.page_number > 1 do %>
-    <button phx-click="paginate" phx-value-page={@pagination.page_number - 1} class="px-3 py-1 border rounded">
-      « Prev
-    </button>
+    <.link
+      patch={~p"/teachers?page=#{@pagination.page_number - 1}"}
+      class="px-3 py-1 border rounded"
+    >
+      « Previous
+    </.link>
   <% end %>
 
-  <%= for p <- 1..@pagination.total_pages do %>
-    <button phx-click="paginate" phx-value-page={p}
-      class={"px-3 py-1 border rounded #{if p == @pagination.page_number, do: "bg-blue-500 text-white"}"}>
-      <%= p %>
-    </button>
-  <% end %>
+  <span class="px-3 py-1">Page <%= @pagination.page_number %> of <%= @pagination.total_pages %></span>
 
   <%= if @pagination.page_number < @pagination.total_pages do %>
-    <button phx-click="paginate" phx-value-page={@pagination.page_number + 1} class="px-3 py-1 border rounded">
+    <.link
+      patch={~p"/teachers?page=#{@pagination.page_number + 1}"}
+      class="px-3 py-1 border rounded"
+    >
       Next »
-    </button>
+    </.link>
   <% end %>
-</div>
+</nav>
 
 
 <.modal :if={@live_action in [:new, :edit]} id="student-modal" show on_cancel={JS.patch(~p"/students")}>

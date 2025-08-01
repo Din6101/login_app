@@ -15,7 +15,7 @@ defmodule LoginAppWeb.AdminDashboardLive do
         user_count: Accounts.count_users()
       }
 
-      {:ok, assign(socket, stats: stats, page_title: "Admin Dashboard")}
+      {:ok, assign(socket, stats: stats, page_title: "Overview")}
     else
       {:ok,
        socket
@@ -27,6 +27,7 @@ defmodule LoginAppWeb.AdminDashboardLive do
   @impl true
   def render(assigns) do
     ~H"""
+
     <h1 class="text-2xl font-bold mb-4"><%= @page_title %></h1>
 
     <div class="grid grid-cols-3 gap-4">
